@@ -4,7 +4,7 @@ import { useState, useEffect, cloneElement } from 'react';
 import { formatBytes } from '../utils/format';
 
 export default function Sidebar({ isVideoPlaying }) {
-  const { folders, addFolder, removeFolder, currentView, setCurrentView, playlists, currentUser, isSidebarCollapsed, removePlaylist, renamePlaylist, showToast } = useLibrary();
+  const { folders, addFolder, removeFolder, currentView, setCurrentView, playlists, currentUser, isSidebarCollapsed, removePlaylist, renamePlaylist, showToast, activeVideo, setActiveVideo, setQueue } = useLibrary();
   const userPlaylists = playlists[currentUser] || ['Watch Later', 'Videos', 'Movies', 'Series'];
   
   const [storageInfo, setStorageInfo] = useState({ usage: 0, quota: 0, percent: 0 });
@@ -15,6 +15,17 @@ export default function Sidebar({ isVideoPlaying }) {
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
   }, []);
+
+  const handleNavigate = (view) => {
+    if (activeVideo) {
+      setQueue(prev => {
+        const newQueue = prev.filter(v => v.id !== activeVideo.id);
+        return [activeVideo, ...newQueue];
+      });
+      setActiveVideo(null);
+    }
+    setCurrentView(view);
+  };
 
   useEffect(() => {
     async function checkStorage() {
@@ -47,11 +58,11 @@ export default function Sidebar({ isVideoPlaying }) {
       <div className={`flex-1 py-3 ${isMini ? 'px-2' : 'px-3'} flex flex-col gap-6`}>
         {/* Main Links */}
         <div className="flex flex-col gap-1">
-          <NavItem icon={<Home size={20} />} label="Home" active={currentView === 'Home'} onClick={() => setCurrentView('Home')} isCollapsed={isMini} />
+          <NavItem icon={<Home size={20} />} label="Home" active={currentView === 'Home'} onClick={() => handleNavigate('Home')} isCollapsed={isMini} />
           
           {!isMini && <div className="px-3 py-1 mt-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Playlists</div>}
-          {userPlaylists.includes('Movies') && <NavItem icon={<Film size={20} />} label="Movies" active={currentView === 'Movies'} onClick={() => setCurrentView('Movies')} isCollapsed={isMini} />}
-          {userPlaylists.includes('Watch Later') && <NavItem icon={<Clock size={20} />} label="Watch Later" active={currentView === 'Watch Later'} onClick={() => setCurrentView('Watch Later')} isCollapsed={isMini} />}
+          {userPlaylists.includes('Movies') && <NavItem icon={<Film size={20} />} label="Movies" active={currentView === 'Movies'} onClick={() => handleNavigate('Movies')} isCollapsed={isMini} />}
+          {userPlaylists.includes('Watch Later') && <NavItem icon={<Clock size={20} />} label="Watch Later" active={currentView === 'Watch Later'} onClick={() => handleNavigate('Watch Later')} isCollapsed={isMini} />}
           
           {['Videos', 'Series', ...userPlaylists.filter(pl => !['Watch Later', 'Videos', 'Movies', 'Series'].includes(pl))].map(pl => {
             if (!userPlaylists.includes(pl)) return null;
@@ -62,7 +73,7 @@ export default function Sidebar({ isVideoPlaying }) {
 
             return (
               <div key={pl} className="relative group">
-                <NavItem icon={icon} label={pl} active={currentView === pl} onClick={() => setCurrentView(pl)} isCollapsed={isMini} />
+                <NavItem icon={icon} label={pl} active={currentView === pl} onClick={() => handleNavigate(pl)} isCollapsed={isMini} />
                 {!isMini && (
                   <>
                     <button 
@@ -98,7 +109,7 @@ export default function Sidebar({ isVideoPlaying }) {
                             if (confirm(`Are you sure you want to delete the playlist "${pl}"?`)) {
                               removePlaylist(pl);
                               showToast(`Playlist "${pl}" deleted`);
-                              if (currentView === pl) setCurrentView('Home');
+                              if (currentView === pl) handleNavigate('Home');
                               setOpenMenu(null);
                             }
                           }}
@@ -120,9 +131,9 @@ export default function Sidebar({ isVideoPlaying }) {
 
         {/* Library Links */}
         <div className="flex flex-col gap-1">
-          <NavItem icon={<Heart size={20} />} label="Favorites" active={currentView === 'Favorites'} onClick={() => setCurrentView('Favorites')} isCollapsed={isMini} />
-          <NavItem icon={<History size={20} />} label="History" active={currentView === 'History'} onClick={() => setCurrentView('History')} isCollapsed={isMini} />
-          <NavItem icon={<Clock size={20} />} label="Continue Watching" active={currentView === 'Continue Watching'} onClick={() => setCurrentView('Continue Watching')} isCollapsed={isMini} />
+          <NavItem icon={<Heart size={20} />} label="Favorites" active={currentView === 'Favorites'} onClick={() => handleNavigate('Favorites')} isCollapsed={isMini} />
+          <NavItem icon={<History size={20} />} label="History" active={currentView === 'History'} onClick={() => handleNavigate('History')} isCollapsed={isMini} />
+          <NavItem icon={<Clock size={20} />} label="Continue Watching" active={currentView === 'Continue Watching'} onClick={() => handleNavigate('Continue Watching')} isCollapsed={isMini} />
         </div>
 
         <div className="h-px bg-[#272727] w-full" />
