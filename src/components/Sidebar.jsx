@@ -4,7 +4,7 @@ import { useState, useEffect, cloneElement } from 'react';
 import { formatBytes } from '../utils/format';
 
 export default function Sidebar({ isVideoPlaying }) {
-  const { folders, addFolder, removeFolder, currentView, setCurrentView, playlists, currentUser, isSidebarCollapsed, removePlaylist, renamePlaylist, showToast, activeVideo, setActiveVideo, setQueue } = useLibrary();
+  const { folders, addFolder, removeFolder, currentView, setCurrentView, playlists, currentUser, isSidebarCollapsed, removePlaylist, renamePlaylist, showToast, activeVideo, setActiveVideo, setQueue, sidebarPipEnabled } = useLibrary();
   const userPlaylists = playlists[currentUser] || ['Watch Later', 'Videos', 'Movies', 'Series'];
   
   const [storageInfo, setStorageInfo] = useState({ usage: 0, quota: 0, percent: 0 });
@@ -18,10 +18,12 @@ export default function Sidebar({ isVideoPlaying }) {
 
   const handleNavigate = (view) => {
     if (activeVideo) {
-      setQueue(prev => {
-        const newQueue = prev.filter(v => v.id !== activeVideo.id);
-        return [activeVideo, ...newQueue];
-      });
+      if (sidebarPipEnabled) {
+        setQueue(prev => {
+          const newQueue = prev.filter(v => v.id !== activeVideo.id);
+          return [activeVideo, ...newQueue];
+        });
+      }
       setActiveVideo(null);
     }
     setCurrentView(view);

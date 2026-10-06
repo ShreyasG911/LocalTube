@@ -5,7 +5,7 @@ import { formatTitle } from '../utils/format';
 import { Play, MoreVertical, Eye, CheckSquare, X, Trash2 } from 'lucide-react'; 
 
 export default function SettingsView() {
-  const { currentUser, switchUser, users, removeUser, updateMeta, videos, videoMeta, theme, setTheme, showToast, setCurrentView, autoSaveMovies, setAutoSaveMovies } = useLibrary();
+  const { currentUser, switchUser, users, removeUser, updateMeta, videos, videoMeta, theme, setTheme, showToast, setCurrentView, autoSaveMovies, setAutoSaveMovies, sidebarPipEnabled, setSidebarPipEnabled } = useLibrary();
   const [selectedHidden, setSelectedHidden] = useState([]);
   const [showHiddenContent, setShowHiddenContent] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
@@ -132,6 +132,18 @@ export default function SettingsView() {
                 <option value="dark">Dark Mode</option>
                 <option value="light">Light Mode</option>
               </select>
+            </div>
+            
+            <div className="h-px bg-[#272727] w-full" />
+            
+            <div className="flex justify-between items-center cursor-pointer" onClick={() => setSidebarPipEnabled(!sidebarPipEnabled)}>
+              <div>
+                <h3 className="font-medium text-white">Sidebar Picture-in-Picture</h3>
+                <p className="text-sm text-gray-400">Continue playing in MiniPlayer when you click a playlist</p>
+              </div>
+              <div className={`w-11 h-6 rounded-full relative transition-colors ${sidebarPipEnabled ? 'bg-[#3ea6ff]' : 'bg-[#3f3f3f]'}`}>
+                <div className={`w-5 h-5 bg-white rounded-full absolute top-[2px] transition-all shadow-sm ${sidebarPipEnabled ? 'left-[22px]' : 'left-[2px]'}`} />
+              </div>
             </div>
           </div>
         </section>

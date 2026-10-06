@@ -24,7 +24,11 @@ export function LibraryProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(localStorage.getItem('localtube_user') || 'Default');
   const [users, setUsers] = useState(JSON.parse(localStorage.getItem('localtube_users')) || ['Default']);
   const [autoSaveMovies, setAutoSaveMovies] = useState(localStorage.getItem('localtube_autosave_movies') !== 'false');
+  const [sidebarPipEnabled, setSidebarPipEnabled] = useState(localStorage.getItem('localtube_sidebar_pip') !== 'false');
   
+  useEffect(() => {
+    localStorage.setItem('localtube_sidebar_pip', sidebarPipEnabled);
+  }, [sidebarPipEnabled]);
   useEffect(() => {
     localStorage.setItem('localtube_autosave_movies', autoSaveMovies);
   }, [autoSaveMovies]);
@@ -258,7 +262,7 @@ export function LibraryProvider({ children }) {
   };
 
   return (
-    <LibraryContext.Provider value={{ folders, videos, videoMeta, isLoading, addFolder, removeFolder, scanAllFolders, updateMeta, currentView, setCurrentView, searchQuery, setSearchQuery, currentUser, users, switchUser, addUser, removeUser, playlists, addPlaylist, removePlaylist, renamePlaylist, isSidebarCollapsed, setIsSidebarCollapsed, theme, setTheme, queue, setQueue, activeVideo, setActiveVideo, toastMessage, showToast, autoSaveMovies, setAutoSaveMovies }}>
+    <LibraryContext.Provider value={{ folders, videos, videoMeta, isLoading, addFolder, removeFolder, scanAllFolders, updateMeta, currentView, setCurrentView, searchQuery, setSearchQuery, currentUser, users, switchUser, addUser, removeUser, playlists, addPlaylist, removePlaylist, renamePlaylist, isSidebarCollapsed, setIsSidebarCollapsed, theme, setTheme, queue, setQueue, activeVideo, setActiveVideo, toastMessage, showToast, autoSaveMovies, setAutoSaveMovies, sidebarPipEnabled, setSidebarPipEnabled }}>
       {children}
       
       {/* Global Toast */}
