@@ -17,6 +17,12 @@ function App() {
   const [showAllFolders, setShowAllFolders] = useState(false);
 
   useEffect(() => {
+    if (activeVideo) {
+      setQueue(prev => {
+        const newQueue = prev.filter(v => v.id !== activeVideo.id);
+        return [activeVideo, ...newQueue];
+      });
+    }
     setActiveVideo(null);
     setSelectedCategory('All');
   }, [currentView, searchQuery]);

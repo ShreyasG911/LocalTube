@@ -4,6 +4,7 @@ import { useLibrary } from '../context/LibraryContext';
 import { verifyPermission } from '../services/fileSystem';
 
 export default function MiniPlayer({ video, onExpand, onClose, onNext }) {
+  const { videoMeta } = useLibrary();
   const [videoUrl, setVideoUrl] = useState(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -64,6 +65,12 @@ export default function MiniPlayer({ video, onExpand, onClose, onNext }) {
           ref={videoRef}
           src={videoUrl}
           className="w-full h-full object-contain"
+          onLoadedMetadata={() => {
+            const meta = videoMeta[video.id];
+            if (meta && meta.progress) {
+              videoRef.current.currentTime = meta.progress;
+            }
+          }}
           onTimeUpdate={handleTimeUpdate}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
