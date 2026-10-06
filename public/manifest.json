@@ -1,0 +1,16 @@
+{
+  "name": "LocalTube",
+  "short_name": "LocalTube",
+  "description": "Your YouTube-Style Local Video Library",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#0f0f0f",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

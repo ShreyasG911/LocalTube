@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-[#0f0f0f] text-white;
+  }
+}
+
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.95) translateY(-5px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes slide-up-fade {
+  0% { opacity: 0; transform: translateY(20px) scale(0.98); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes scale-out {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.95) translateY(10px); }
+}
+
+.animate-pop-in {
+  animation: pop-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top right;
+}
+
+.animate-slide-up {
+  animation: slide-up-fade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-out {
+  animation: scale-out 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Light Mode Support */
+html.light-mode {
+  filter: invert(1) hue-rotate(180deg);
+  background-color: white;
+}
+
+html.light-mode img,
+html.light-mode video {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Custom Scrollbar - YouTube Style */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: transparent;
+}
+
+/* Track */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle - Invisible by default */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+}
+
+/* Show Handle on Hover */
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: #717171;
+}
+
+/* Handle on hover (lighter) */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
+}
+
+/* Magic Feed Button */
+@keyframes chemicalMix {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; filter: hue-rotate(45deg) saturate(1.5); }
+  100% { background-position: 0% 50%; }
+}
+
+.magic-feed-btn {
+  position: relative;
+  background: #272727;
+  z-index: 1;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.magic-feed-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px; /* Border thickness */
+  background: linear-gradient(60deg, #4285F4, #DB4437, #F4B400, #0F9D58, #4285F4);
+  background-size: 300% 300%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+}
+
+.magic-feed-btn:hover::before {
+  animation: chemicalMix 2s infinite linear;
+  filter: blur(1px) brightness(1.2);
+  padding: 3px;
+}
+
+.magic-feed-btn:hover {
+  background: linear-gradient(120deg, rgba(66,133,244,0.15), rgba(219,68,55,0.15), rgba(244,180,0,0.15), rgba(15,157,88,0.15));
+  background-size: 200% 200%;
+  animation: chemicalMix 2.5s infinite ease-in-out;
+  color: white !important;
+  box-shadow: 0 0 15px rgba(66, 133, 244, 0.3);
+}
