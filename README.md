@@ -1,4 +1,4 @@
-# LocalTube - https://shreyasg911.github.io/LocalTube/
+# LocalTube - [Link](https://shreyasg911.github.io/LocalTube/)
 
 **LocalTube** is a blazing-fast, privacy-first Progressive Web Application (PWA) that transforms your local video folders into a beautiful, YouTube-style streaming interface. 
 
