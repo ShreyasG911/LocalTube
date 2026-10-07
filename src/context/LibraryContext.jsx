@@ -213,6 +213,20 @@ export function LibraryProvider({ children }) {
     await loadLibrary();
   };
 
+  const addDroppedFolder = async (dirHandle) => {
+    if (!dirHandle || dirHandle.kind !== 'directory') return;
+
+    const folder = {
+      id: dirHandle.name,
+      name: dirHandle.name,
+      handle: dirHandle
+    };
+
+    await db.addFolder(folder);
+    await scanFolder(folder);
+    await loadLibrary();
+  };
+
   const scanFolder = async (folder) => {
     const hasPermission = await verifyPermission(folder.handle);
     if (!hasPermission) {
@@ -262,7 +276,7 @@ export function LibraryProvider({ children }) {
   };
 
   return (
-    <LibraryContext.Provider value={{ folders, videos, videoMeta, isLoading, addFolder, removeFolder, scanAllFolders, updateMeta, currentView, setCurrentView, searchQuery, setSearchQuery, currentUser, users, switchUser, addUser, removeUser, playlists, addPlaylist, removePlaylist, renamePlaylist, isSidebarCollapsed, setIsSidebarCollapsed, theme, setTheme, queue, setQueue, activeVideo, setActiveVideo, toastMessage, showToast, autoSaveMovies, setAutoSaveMovies, sidebarPipEnabled, setSidebarPipEnabled }}>
+    <LibraryContext.Provider value={{ folders, videos, videoMeta, isLoading, addFolder, addDroppedFolder, removeFolder, scanAllFolders, updateMeta, currentView, setCurrentView, searchQuery, setSearchQuery, currentUser, users, switchUser, addUser, removeUser, playlists, addPlaylist, removePlaylist, renamePlaylist, isSidebarCollapsed, setIsSidebarCollapsed, theme, setTheme, queue, setQueue, activeVideo, setActiveVideo, toastMessage, showToast, autoSaveMovies, setAutoSaveMovies, sidebarPipEnabled, setSidebarPipEnabled }}>
       {children}
       
       {/* Global Toast */}

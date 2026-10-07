@@ -9,12 +9,13 @@ import MiniPlayer from './components/MiniPlayer';
 import { VirtuosoGrid } from 'react-virtuoso';
 
 function App() {
-  const { folders, videos, videoMeta, isLoading, currentView, setCurrentView, searchQuery, updateMeta, setIsSidebarCollapsed, queue, setQueue, activeVideo, setActiveVideo, playlists, currentUser, showToast, removePlaylist } = useLibrary();
+  const { folders, addFolder, addDroppedFolder, videos, videoMeta, isLoading, currentView, setCurrentView, searchQuery, updateMeta, setIsSidebarCollapsed, queue, setQueue, activeVideo, setActiveVideo, playlists, currentUser, showToast, removePlaylist } = useLibrary();
   const [openMenuId, setOpenMenuId] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('Newest');
   const [magicSeed, setMagicSeed] = useState(0);
   const [showAllFolders, setShowAllFolders] = useState(false);
+  const [dragCounter, setDragCounter] = useState(0);
 
   useEffect(() => {
     if (activeVideo) {
@@ -33,6 +34,58 @@ function App() {
       setIsSidebarCollapsed(true);
     }
   }, [activeVideo, setIsSidebarCollapsed]);
+
+  const addDroppedFolderRef = useRef(addDroppedFolder);
+  const showToastRef = useRef(showToast);
+
+  useEffect(() => {
+    addDroppedFolderRef.current = addDroppedFolder;
+    showToastRef.current = showToast;
+  }, [addDroppedFolder, showToast]);
+
+  useEffect(() => {
+    const handleDragEnter = (e) => {
+      e.preventDefault();
+      setDragCounter(prev => prev + 1);
+    };
+
+    const handleDragLeave = (e) => {
+      e.preventDefault();
+      setDragCounter(prev => prev - 1);
+    };
+
+    const handleDragOver = (e) => e.preventDefault();
+    const handleDrop = async (e) => {
+      e.preventDefault();
+      setDragCounter(0);
+      if (!e.dataTransfer?.items) return;
+      for (let i = 0; i < e.dataTransfer.items.length; i++) {
+        const item = e.dataTransfer.items[i];
+        if (item.kind === 'file' && item.getAsFileSystemHandle) {
+          try {
+            const handle = await item.getAsFileSystemHandle();
+            if (handle && handle.kind === 'directory') {
+              showToastRef.current(`Adding dropped folder "${handle.name}"...`);
+              await addDroppedFolderRef.current(handle);
+            }
+          } catch (err) {
+            console.error("Drop error", err);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('dragenter', handleDragEnter);
+    window.addEventListener('dragleave', handleDragLeave);
+    window.addEventListener('dragover', handleDragOver);
+    window.addEventListener('drop', handleDrop);
+    return () => {
+      window.removeEventListener('dragenter', handleDragEnter);
+      window.removeEventListener('dragleave', handleDragLeave);
+      window.removeEventListener('dragover', handleDragOver);
+      window.removeEventListener('drop', handleDrop);
+    };
+  }, []);
 
   useEffect(() => {
     const handleGoHome = () => {
@@ -171,7 +224,7 @@ function App() {
                 </button>
 
                 {folders.length + 1 > 6 && (
-                  <button 
+                  <button
                     onClick={() => setShowAllFolders(!showAllFolders)}
                     className="text-[#3ea6ff] hover:text-[#65b6ff] text-sm font-medium whitespace-nowrap px-2 transition-colors hover:underline active:scale-95"
                   >
@@ -318,7 +371,9 @@ function App() {
                 ) : (
                   <>
                     <span className="mb-2">Your video library is empty.</span>
-                    <span className="text-xs text-gray-600">Click "Add Folder" to scan for local videos.</span>
+                    <span className="text-xs text-gray-600">
+                      Click "<button onClick={addFolder} className="text-[#3ea6ff] hover:text-[#65bdf9] hover:underline transition-colors focus:outline-none">Add Folder</button>" to scan for local videos.
+                    </span>
                   </>
                 )}
               </div>
@@ -334,6 +389,16 @@ function App() {
             onClose={() => setQueue([])}
             onNext={() => setQueue(prev => prev.slice(1))}
           />
+        )}
+
+        {dragCounter > 0 && (
+          <div className="fixed inset-0 z-[9999] backdrop-blur-sm bg-black/60 flex flex-col items-center justify-center border-4 border-dashed border-[#3ea6ff] m-4 rounded-3xl animate-in fade-in duration-200">
+            <div className="bg-[#1f1f1f] p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 pointer-events-none">
+              <FolderPlus size={64} className="text-[#3ea6ff] animate-bounce" />
+              <h2 className="text-2xl font-bold text-white text-center">Drop Folder Here</h2>
+              <p className="text-gray-400 text-center text-sm max-w-xs">Instantly scan and add your local videos to the LocalTube platform.</p>
+            </div>
+          </div>
         )}
       </div>
     </Layout>
